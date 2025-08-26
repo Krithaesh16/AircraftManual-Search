@@ -109,6 +109,7 @@ def logout():
     logout_user()
     return redirect(url_for("login"))
 
+# ---------------- SEARCH PAGE ----------------
 @app.route("/", methods=["GET"])
 @login_required
 def search_page():
@@ -116,10 +117,14 @@ def search_page():
     results = []
 
     if query:
+        # Automatically wrap multi-word queries in quotes for exact phrase search
+        if " " in query:
+            query = f'"{query}"'
+
         ix = get_index(create=False)
         with ix.searcher() as searcher:
             parser = QueryParser("content", schema=ix.schema)
-	    parser.add_plugin(PhrasePlugin())	
+            parser.add_plugin(PhrasePlugin())
             q = parser.parse(query)
             res = searcher.search(q, limit=20)
             for hit in res:
