@@ -11,11 +11,14 @@
   {% for r in results %}
     <div class="result-item">
       <p><b>{{ r['title'] }}</b> ({{ r['filename'] }}, page {{ r['page'] }})</p>
-      <p><a href="/pdfs/{{ r['filename'] }}" target="_blank">📂 Open PDF</a></p>
+      <p>
+        <a href="/pdfs/{{ r['filename'] }}#page={{ r['page'] }}" target="_blank">
+          📂 Open PDF
+        </a>
+      </p>
     </div>
   {% endfor %}
 {% endif %}
 {% endblock %}
-
 
 
