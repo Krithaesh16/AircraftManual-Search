@@ -5,7 +5,7 @@ from flask_login import LoginManager, UserMixin, login_user, login_required, log
 from werkzeug.security import generate_password_hash, check_password_hash
 from whoosh.fields import Schema, TEXT, ID, NUMERIC, STORED
 from whoosh import index as whoosh_index
-from whoosh.qparser import QueryParser, syntax
+from whoosh.qparser import QueryParser, PhrasePlugin
 
 app = Flask(__name__)
 app.secret_key = "supersecretkey"  # change this in production
@@ -118,7 +118,8 @@ def search_page():
     if query:
         ix = get_index(create=False)
         with ix.searcher() as searcher:
-            parser = QueryParser("content", schema=ix.schema, group=syntax.PhraseGroup)
+            parser = QueryParser("content", schema=ix.schema)
+	    parser.add_plugin(PhrasePlugin())	
             q = parser.parse(query)
             res = searcher.search(q, limit=20)
             for hit in res:
