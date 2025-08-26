@@ -11,14 +11,27 @@
   {% for r in results %}
     <div class="result-item">
       <p><b>{{ r['title'] }}</b> ({{ r['filename'] }}, page {{ r['page'] }})</p>
+
+      <!-- Your existing open link -->
       <p>
         <a href="/pdfs/{{ r['filename'] }}#page={{ r['page'] }}" target="_blank">
           📂 Open PDF
         </a>
       </p>
+
+      <!-- New: Open with PDF.js viewer and highlight the search term -->
+      <p>
+        <a
+          href="{{ url_for('static', filename='pdfjs/web/viewer.html') }}?file={{ url_for('serve_pdf', filename=r['filename']) | urlencode }}#page={{ r['page'] }}&search={{ query | urlencode }}"
+          target="_blank">
+          🔍 Open PDF (highlight “{{ query }}”)
+        </a>
+      </p>
+
     </div>
   {% endfor %}
 {% endif %}
 {% endblock %}
+
 
 
