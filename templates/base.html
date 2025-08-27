@@ -1,80 +1,84 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>{% block title %}PDF Search{% endblock %}</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}{% endblock %} | Maintenance Data Search</title>
   <style>
-    :root {
-      --bg-light: #fff;
-      --text-light: #333;
-      --bg-dark: #121212;
-      --text-dark: #f5f5f5;
-      --primary: #b30000;
-    }
     body {
+      font-family: "Segoe UI", Tahoma, sans-serif;
       margin: 0;
-      font-family: Arial, sans-serif;
-      background: var(--bg-light);
-      color: var(--text-light);
-      transition: background 0.3s, color 0.3s;
+      background: #ffffff;
+      color: #333;
     }
-    body.dark {
-      background: var(--bg-dark);
-      color: var(--text-dark);
+
+    /* 🔴 Force Red Navbar */
+    .navbar {
+      background: #d32f2f !important; /* force bright red */
+      color: white !important;
+      padding: 14px 30px !important;
+      display: flex !important;
+      justify-content: space-between !important;
+      align-items: center !important;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2) !important;
     }
-    header {
-      background: var(--primary);
-      color: white;
-      padding: 1rem;
-      text-align: center;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+
+    .navbar .title {
+      font-size: 22px !important;
+      font-weight: bold !important;
+      letter-spacing: 0.5px !important;
+      color: #ffffff !important;
     }
-    button.toggle {
-      background: white;
-      border: none;
-      padding: 0.5rem 1rem;
-      cursor: pointer;
-      border-radius: 6px;
+
+    .navbar .menu {
+      display: flex !important;
+      gap: 20px !important;
+      align-items: center !important;
     }
-    a {
-      color: var(--primary);
-      text-decoration: none;
+
+    .navbar a {
+      color: #ffffff !important;
+      text-decoration: none !important;
+      font-size: 14px !important;
+      padding: 6px 14px !important;
+      border-radius: 4px !important;
+      transition: 0.2s !important;
     }
+
+    .navbar a:hover {
+      background: #ffffff !important;
+      color: #d32f2f !important;
+    }
+
+    /* Page Container */
     .container {
-      max-width: 900px;
-      margin: 2rem auto;
-      padding: 1rem;
+      max-width: 1100px !important;
+      margin: 30px auto !important;
+      padding: 0 20px !important;
     }
   </style>
 </head>
 <body>
-  <header>
-    <h1>🔍 PDF Search</h1>
-    <div>
-      {% if current_user.is_authenticated %}
-        <span>Welcome, {{ current_user.id }}</span>
+
+  <div class="navbar">
+    <div class="title">Maintenance Data Search</div>
+    <div class="menu">
+      {% if session.get('username') %}
+        <span style="color:white;">Welcome, {{ session['username'] }}</span>
         <a href="{{ url_for('logout') }}">Logout</a>
+      {% else %}
+        <a href="{{ url_for('login') }}">Login</a>
+        <a href="{{ url_for('register') }}">Register</a>
       {% endif %}
-      <button class="toggle" onclick="toggleMode()">🌓</button>
     </div>
-  </header>
+  </div>
 
   <div class="container">
     {% block content %}{% endblock %}
   </div>
 
-  <script>
-    function toggleMode() {
-      document.body.classList.toggle("dark");
-      localStorage.setItem("darkMode", document.body.classList.contains("dark"));
-    }
-    window.onload = () => {
-      if (localStorage.getItem("darkMode") === "true") {
-        document.body.classList.add("dark");
-      }
-    }
-  </script>
 </body>
 </html>
+
+
+

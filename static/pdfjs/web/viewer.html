@@ -762,7 +762,25 @@ See https://github.com/adobe-type-tools/cmap-resources
         </div>
       </div> <!-- editorUndoBar -->
 
-    </div> <!-- outerContainer -->
+        </div> <!-- outerContainer -->
     <div id="printContainer"></div>
+
+    <script>
+      document.addEventListener("webviewerloaded", function () {
+        const hashParams = new URLSearchParams(window.location.hash.substring(1));
+        const searchQuery = hashParams.get("search");
+        if (searchQuery) {
+          PDFViewerApplication.initializedPromise.then(() => {
+            PDFViewerApplication.findController.executeCommand("find", {
+              query: searchQuery,
+              phraseSearch: true,   // ✅ exact phrase only
+              highlightAll: true,
+              caseSensitive: false
+            });
+          });
+        }
+      });
+    </script>
   </body>
 </html>
+

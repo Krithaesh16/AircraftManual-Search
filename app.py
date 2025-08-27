@@ -20,7 +20,7 @@ def get_db():
     return db
 
 def init_db():
-    with app.app_context():
+    with app.app_context(): 
         db = get_db()
         db.execute("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT UNIQUE, password TEXT)")
         db.commit()
@@ -113,19 +113,19 @@ def logout():
 @app.route("/", methods=["GET"])
 @login_required
 def search_page():
-    query = request.args.get("q", "")
+    raw_query = request.args.get("q", "")  # keep original query from user
     results = []
 
-    if query:
-        # Automatically wrap multi-word queries in quotes for exact phrase search
-        if " " in query:
-            query = f'"{query}"'
+    if raw_query:
+        whoosh_query = raw_query
+        if " " in raw_query:
+            whoosh_query = f'"{raw_query}"'  # force exact phrase
 
         ix = get_index(create=False)
         with ix.searcher() as searcher:
             parser = QueryParser("content", schema=ix.schema)
             parser.add_plugin(PhrasePlugin())
-            q = parser.parse(query)
+            q = parser.parse(whoosh_query)
             res = searcher.search(q, limit=20)
             for hit in res:
                 results.append({
@@ -134,7 +134,8 @@ def search_page():
                     "page": hit["page"]
                 })
 
-    return render_template("index.html", query=query, results=results)
+    # Pass raw query to template for highlighting / PDF search
+    return render_template("index.html", query=raw_query, results=results)
 
 @app.route("/pdfs/<path:filename>")
 @login_required
@@ -145,4 +146,5 @@ def serve_pdf(filename):
 if __name__ == "__main__":
     init_db()
     app.run(host="0.0.0.0", port=8000, debug=True)
+
 

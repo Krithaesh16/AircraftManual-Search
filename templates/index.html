@@ -1,37 +1,138 @@
 {% extends "base.html" %}
 {% block title %}Search PDFs{% endblock %}
 {% block content %}
-<form method="GET">
-  <input type="text" name="q" placeholder="Enter keyword" value="{{ query }}">
-  <button type="submit">Search</button>
-</form>
 
+<style>
+  /* General Page Styling */
+  body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f8;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Top Navigation Bar */
+  .navbar {
+    background: #2c3e50;
+    color: white;
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .navbar h1 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: bold;
+  }
+  .navbar a {
+    color: white;
+    text-decoration: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    background: #e74c3c;
+    transition: 0.3s;
+  }
+  .navbar a:hover {
+    background: #c0392b;
+  }
+
+  /* Search Section */
+  .search-container {
+    text-align: center;
+    margin: 30px 0;
+  }
+  .search-container input {
+    width: 50%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 25px;
+    font-size: 16px;
+    outline: none;
+  }
+  .search-container button {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 25px;
+    background: #3498db;
+    color: white;
+    font-size: 16px;
+    margin-left: 10px;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  .search-container button:hover {
+    background: #2980b9;
+  }
+
+  /* Results Section */
+  .results {
+    max-width: 900px;
+    margin: auto;
+  }
+  .result-card {
+    background: white;
+    padding: 20px;
+    margin: 15px 0;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: 0.3s;
+  }
+  .result-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+  }
+  .result-card h3 {
+    margin: 0 0 10px 0;
+    color: #2c3e50;
+  }
+  .result-card p {
+    margin: 5px 0;
+    color: #555;
+  }
+  .result-card a {
+    display: inline-block;
+    margin-right: 15px;
+    color: #3498db;
+    text-decoration: none;
+    font-weight: bold;
+  }
+  .result-card a:hover {
+    text-decoration: underline;
+  }
+</style>
+
+<!-- Navigation Bar -->
+<div class="navbar">
+  <h1>PDF Search</h1>
+  <a href="{{ url_for('logout') }}">Logout</a>
+</div>
+
+<!-- Search Form -->
+<div class="search-container">
+  <form method="GET">
+    <input type="text" name="q" placeholder="🔍 Enter keyword..." value="{{ query }}">
+    <button type="submit">Search</button>
+  </form>
+</div>
+
+<!-- Search Results -->
 {% if results %}
-  <h2>Results</h2>
-  {% for r in results %}
-    <div class="result-item">
-      <p><b>{{ r['title'] }}</b> ({{ r['filename'] }}, page {{ r['page'] }})</p>
-
-      <!-- Your existing open link -->
-      <p>
-        <a href="/pdfs/{{ r['filename'] }}#page={{ r['page'] }}" target="_blank">
-          📂 Open PDF
+  <div class="results">
+    {% for r in results %}
+      <div class="result-card">
+        <h3>{{ r['title'] }}</h3>
+        <p><b>File:</b> {{ r['filename'] }} | <b>Page:</b> {{ r['page'] }}</p>
+        
+        <a href="/pdfs/{{ r['filename'] }}#page={{ r['page'] }}" target="_blank">📂 Open PDF</a>
+        <a href="{{ url_for('static', filename='pdfjs/web/viewer.html') }}?file={{ url_for('serve_pdf', filename=r['filename']) | urlencode }}#page={{ r['page'] }}&search={{ query | urlencode }}&phrase=true" target="_blank">
+          🔍 Highlight “{{ query }}”
         </a>
-      </p>
-
-      <!-- New: Open with PDF.js viewer and highlight the search term -->
-      <p>
-        <a
-          href="{{ url_for('static', filename='pdfjs/web/viewer.html') }}?file={{ url_for('serve_pdf', filename=r['filename']) | urlencode }}#page={{ r['page'] }}&search={{ query | urlencode }}"
-          target="_blank">
-          🔍 Open PDF (highlight “{{ query }}”)
-        </a>
-      </p>
-
-    </div>
-  {% endfor %}
+      </div>
+    {% endfor %}
+  </div>
 {% endif %}
-{% endblock %}
 
+{% endblock %}
 
 
